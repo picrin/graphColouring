@@ -47,38 +47,39 @@ with open(sys.argv[1]) as g:
         adjacency = [int(a) for a in adjacency.split(" ")]
         upsertVertex(graph, vertex, adjacency)
         colouring[vertex] = None
-availableColours = [1, 2, 3]
+availableColours = ["red", "green", "blue"]
 
 def checkColourOK(graph, colouring, vertex):
     for a in graph[vertex]:
-        print ("checking", vertex, "against", a, "colours", colouring[vertex], colouring[a])
         if colouring[a] == colouring[vertex]:
-            print("false")
             return False
-    print ("cheked all", "true")
-    return True
+    return True and colouring[vertex] != None
 
-def colourGraph(graph, sortedVertices, colouring, initialIndex = 0):
-    vertexIndex = initialIndex
-    for vertex in sortedVertices[initialIndex:]:
-        vertexIndex += 1
-        colourIndex = 0
-        while colourIndex < len(availableColours):
-            print("colourIndex", colourIndex)
-            colouring[vertex] = availableColours[colourIndex]
-            isOK = checkColourOK(graph, colouring, vertex)
-            if isOK:
-                if vertexIndex == len(graph):
-                    print("success")
-                    print(colouring)
-                    sys.exit(0)
-                else:
-                    colourGraph(graph, sortedVertices, colouring, initialIndex = vertexIndex)
-            colourIndex += 1
+def pickVertex(graph, sortedVertices, colouring, vertexIndex):
+    if vertexIndex == len(graph):
+        return
+    colourIndex = 0
+    vertex = sortedVertices[vertexIndex]
+    while colourIndex < len(availableColours):
+        colouring[vertex] = availableColours[colourIndex]
+        isOK = checkColourOK(graph, colouring, vertex)
+        if isOK:
+            if vertexIndex + 1 == len(graph):
+                print("success")
+                print(colouring)
+                sys.exit(0)
+            else:
+                pickVertex(graph, sortedVertices, colouring, vertexIndex + 1)
+        colouring[vertex] = None
+        colourIndex += 1
+    if vertexIndex == 0:
+        print("failure")
+        sys.exit(1)
+
+def colourGraph(graph, sortedVertices, colouring):
+    pickVertex(graph, sortedVertices, colouring, 0)
+
 sortedVertices = [key for key in graph]
 sortedVertices.sort()
 
 colourGraph(graph, sortedVertices, colouring)
-
-print("failure")
-sys.exit(1)
