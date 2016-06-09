@@ -5,8 +5,8 @@ import sys
 
 argNum = len(sys.argv)
 
-if argNum != 2:
-    print("usage is: `" + sys.argv[0] + " <graphFile>`, where graphFile contains a graph in any supported format.")
+if argNum != 3:
+    print("usage is: " + sys.argv[0] + " <graphFile> <coloursNo>, where graphFile contains a graph in any supported format and coloursNo is a positive integer.")
     sys.exit(1)
 
 
@@ -47,7 +47,8 @@ with open(sys.argv[1]) as g:
         adjacency = [int(a) for a in adjacency.split(" ")]
         upsertVertex(graph, vertex, adjacency)
         colouring[vertex] = None
-availableColours = ["red", "green", "blue"]
+
+availableColours = [i for i in range(int(sys.argv[2]))]
 
 def checkColourOK(graph, colouring, vertex):
     for a in graph[vertex]:
